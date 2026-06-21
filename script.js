@@ -1,5 +1,5 @@
 // Attendance Goal
-const attendanceGoal = 3;
+const attendanceGoal = 50;
 
 // Attendance Counters
 let attendeeCount = 0;
