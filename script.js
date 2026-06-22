@@ -1,9 +1,7 @@
 // Attendance goal
 const attendanceGoal = 50;
 
-// ==========================
 // STATE
-// ==========================
 let attendeeCount = Number(localStorage.getItem("attendeeCount")) || 0;
 let waterCount = Number(localStorage.getItem("waterCount")) || 0;
 let zeroCount = Number(localStorage.getItem("zeroCount")) || 0;
@@ -12,9 +10,7 @@ let powerCount = Number(localStorage.getItem("powerCount")) || 0;
 // FIX: load attendees properly ON START
 let attendees = JSON.parse(localStorage.getItem("attendees")) || [];
 
-// ==========================
 // ELEMENTS
-// ==========================
 const form = document.getElementById("checkInForm");
 const attendeeName = document.getElementById("attendeeName");
 const teamSelect = document.getElementById("teamSelect");
@@ -33,16 +29,15 @@ const resetBtn = document.getElementById("resetBtn");
 
 const attendeeList = document.getElementById("attendeeList");
 
-// ==========================
 // INITIAL UI LOAD
-// ==========================
 function updateUIBase() {
   attendeeCountDisplay.textContent = attendeeCount;
   waterCountDisplay.textContent = waterCount;
   zeroCountDisplay.textContent = zeroCount;
   powerCountDisplay.textContent = powerCount;
 
-  const progress = (attendeeCount / attendanceGoal) * 100;
+  const progress = Math.min((attendeeCount / attendanceGoal) * 100, 100);
+
   progressBar.style.width = progress + "%";
 
   displayAttendees();
@@ -50,10 +45,12 @@ function updateUIBase() {
 
 updateUIBase();
 
-// ==========================
-// RESET BUTTON (FIXED)
-// ==========================
+// RESET BUTTON
 resetBtn.addEventListener("click", function () {
+  if (!confirm("Reset all attendance data?")) {
+    return;
+  }
+
   localStorage.clear();
 
   attendeeCount = 0;
@@ -74,9 +71,7 @@ resetBtn.addEventListener("click", function () {
   celebration.style.display = "none";
 });
 
-// ==========================
 // FORM SUBMIT
-// ==========================
 form.addEventListener("submit", function (event) {
   event.preventDefault();
 
@@ -84,6 +79,11 @@ form.addEventListener("submit", function (event) {
   const team = teamSelect.value;
 
   if (!name || !team) return;
+
+  if (attendees.some((a) => a.name.toLowerCase() === name.toLowerCase())) {
+    alert("Already checked in!");
+    return;
+  }
 
   let teamName = "";
 
@@ -106,25 +106,20 @@ form.addEventListener("submit", function (event) {
     team: teamName,
   });
 
-  // ==========================
   // SAVE TO LOCAL STORAGE
-  // ==========================
   localStorage.setItem("attendees", JSON.stringify(attendees));
   localStorage.setItem("attendeeCount", attendeeCount);
   localStorage.setItem("waterCount", waterCount);
   localStorage.setItem("zeroCount", zeroCount);
   localStorage.setItem("powerCount", powerCount);
 
-  // ==========================
   // UPDATE UI
-  // ==========================
   attendeeCountDisplay.textContent = attendeeCount;
   waterCountDisplay.textContent = waterCount;
   zeroCountDisplay.textContent = zeroCount;
   powerCountDisplay.textContent = powerCount;
 
-  const progress = (attendeeCount / attendanceGoal) * 100;
-  progressBar.style.width = progress + "%";
+  const progress = Math.min((attendeeCount / attendanceGoal) * 100, 100);
 
   greeting.style.display = "block";
   greeting.textContent = `Welcome ${name}! You checked into ${teamName}.`;
@@ -136,9 +131,7 @@ form.addEventListener("submit", function (event) {
   form.reset();
 });
 
-// ==========================
 // ATTENDEE LIST
-// ==========================
 function displayAttendees() {
   attendeeList.innerHTML = "";
 
@@ -149,9 +142,7 @@ function displayAttendees() {
   });
 }
 
-// ==========================
-// LEVEL UPS (ALL 3 REQUIRED)
-// ==========================
+// LEVEL UPS
 function checkLevelUps() {
   // LEVEL UP 1
   if (attendeeCount >= 5) {
@@ -164,38 +155,37 @@ function checkLevelUps() {
     greeting.textContent = "🚀 Level Up 2: Event gaining strong momentum!";
   }
 
-  // LEVEL UP 3 (REQUIRED RUBRIC FEATURE)
+  // LEVEL UP 3
   if (attendeeCount >= 30) {
     let winningTeam = "Tie";
 
     if (waterCount > zeroCount && waterCount > powerCount) {
       winningTeam = "🌊 Team Water Wise";
-    } else if (zeroCount > powerCount) {
+    } else if (zeroCount > powerCount && zeroCount > waterCount) {
       winningTeam = "🌿 Team Net Zero";
-    } else {
+    } else if (powerCount > waterCount && powerCount > zeroCount) {
       winningTeam = "⚡ Team Renewables";
     }
 
     celebration.style.display = "block";
-    celebration.textContent =
-      `🏆 LEVEL UP 3: Analytics Unlocked! ` +
-      `${winningTeam} is currently leading the summit.`;
+    celebration.textContent = `🎉 Attendance Goal Reached! Congratulations ${winningTeam}!`;
   }
 
-  // FINAL GOAL CELEBRATION (REQUIRED RUBRIC)
+  // FINAL GOAL CELEBRATION
   if (attendeeCount >= attendanceGoal) {
     let winner = "Tie";
 
     if (waterCount > zeroCount && waterCount > powerCount) {
       winner = "🌊 Team Water Wise";
-    } else if (zeroCount > powerCount) {
+    } else if (zeroCount > waterCount && zeroCount > powerCount) {
       winner = "🌿 Team Net Zero";
-    } else {
+    } else if (powerCount > waterCount && powerCount > zeroCount) {
       winner = "⚡ Team Renewables";
+    } else {
+      winner = "🤝 Tie";
     }
 
     celebration.style.display = "block";
-    celebration.textContent =
-      `🎉 GOAL REACHED! Congratulations to ${winner} for highest turnout!`;
+    celebration.textContent = `🎉 GOAL REACHED! Congratulations to ${winner} for highest turnout!`;
   }
 }

@@ -170,10 +170,16 @@ button .fas {
 /* Attendance section spacing */
 .attendance-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
+  max-width: 500px;
+  margin: 0 auto 15px;
+}
+
+.attendance-left {
+  display: flex;
+  align-items: center;
   gap: 6px;
-  margin-bottom: 15px;
   font-size: 17px;
   color: #64748b;
 }
@@ -187,21 +193,32 @@ button .fas {
   text-align: center;
 }
 
-.attendance-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin-bottom: 15px;
-  font-size: 17px;
-  color: #64748b;
-}
-
 #attendeeCount {
   color: #0071c5;
   font-size: 24px;
   font-weight: 700;
   margin: 0 2px;
+}
+
+.reset-btn{
+    background:white;
+    color:#dc2626;
+    border:2px solid #dc2626;
+    border-radius:8px;
+    padding:8px 16px;
+    min-width:auto;
+    height:auto;
+    font-size:14px;
+    font-weight:600;
+    box-shadow:none;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.reset-btn:hover{
+    background:#dc2626;
+    color:white;
 }
 
 .attendance-header i {
